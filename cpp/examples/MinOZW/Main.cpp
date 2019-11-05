@@ -44,12 +44,15 @@
 #include "value_classes/ValueBool.h"
 #include "platform/Log.h"
 #include "Defs.h"
-
+#include <signal.h> //  our new library 
 using namespace OpenZWave;
 
 
 static uint32 g_homeId = 0;
 static bool   g_initFailed = false;
+
+volatile sig_atomic_t flag = 1;
+
 
 typedef struct
 {
@@ -63,6 +66,10 @@ static list<NodeInfo*> g_nodes;
 static pthread_mutex_t g_criticalSection;
 static pthread_cond_t  initCond  = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
+
+void my_function(int sig){ // can be called asynchronously
+  flag = 0; // set flag
+}
 
 //-----------------------------------------------------------------------------
 // <GetNodeInfo>
@@ -273,6 +280,8 @@ void OnNotification
 //-----------------------------------------------------------------------------
 int main( int argc, char* argv[] )
 {
+	signal(SIGINT, my_function); 
+
 	pthread_mutexattr_t mutexattr;
 
 	pthread_mutexattr_init ( &mutexattr );
@@ -332,6 +341,8 @@ int main( int argc, char* argv[] )
 		Manager::Get()->AddDriver( port );
 	}
 
+	
+
 	// Now we just wait for either the AwakeNodesQueried or AllNodesQueried notification,
 	// then write out the config file.
 	// In a normal app, we would be handling notifications and building a UI for the user.
@@ -348,39 +359,46 @@ int main( int argc, char* argv[] )
 		// The section below demonstrates setting up polling for a variable.  In this simple
 		// example, it has been hardwired to poll COMMAND_CLASS_BASIC on the each node that 
 		// supports this setting.
-		pthread_mutex_lock( &g_criticalSection );
-		for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
-		{
-			NodeInfo* nodeInfo = *it;
+		//pthread_mutex_lock( &g_criticalSection );
+		printf("let's go! Healing network.\n");
+		Manager::Get()->HealNetwork(g_homeId, true);
+		
+			printf("now we just wait...\n");
+			printf("cancel with ctrl+c\n");
+			while(flag){}
+			printf("done!");
+// 		for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
+// 		{
+// 			NodeInfo* nodeInfo = *it;
 
-			// skip the controller (most likely node 1)
-			//if( nodeInfo->m_nodeId == 1) continue;
+// 			// skip the controller (most likely node 1)
+// 			//if( nodeInfo->m_nodeId == 1) continue;
 
-			printf("NodeID: %d \n ", nodeInfo->m_nodeId);
-			printf("\t NodeName: %s \n ", Manager::Get()->GetNodeName(nodeInfo->m_homeId,nodeInfo->m_nodeId).c_str());
-			printf("\t ManufacturerName: %s \n ", Manager::Get()->GetNodeManufacturerName(nodeInfo->m_homeId,nodeInfo->m_nodeId).c_str());
-			printf("\t NodeProductName: %s \n ", Manager::Get()->GetNodeProductName(nodeInfo->m_homeId,nodeInfo->m_nodeId).c_str());
+// 			printf("NodeID: %d \n ", nodeInfo->m_nodeId);
+// 			printf("\t NodeName: %s \n ", Manager::Get()->GetNodeName(nodeInfo->m_homeId,nodeInfo->m_nodeId).c_str());
+// 			printf("\t ManufacturerName: %s \n ", Manager::Get()->GetNodeManufacturerName(nodeInfo->m_homeId,nodeInfo->m_nodeId).c_str());
+// 			printf("\t NodeProductName: %s \n ", Manager::Get()->GetNodeProductName(nodeInfo->m_homeId,nodeInfo->m_nodeId).c_str());
 
-			printf("Values announced by the nodes without polling: \n");
-			for( list<ValueID>::iterator it2 = nodeInfo->m_values.begin(); it2 != nodeInfo->m_values.end(); ++it2 )
-			{
-				ValueID v = *it2;
-				printf("\t ValueLabel: %s \n", Manager::Get()->GetValueLabel(v).c_str());
-				printf("\t\t ValueType: %s (%d) \n", v.GetTypeAsString().c_str(), v.GetType());
-				printf("\t\t ValueHelp: %s \n", Manager::Get()->GetValueHelp(v).c_str());
-				printf("\t\t ValueUnits: %s \n", Manager::Get()->GetValueUnits(v).c_str());
-				printf("\t\t ValueMin: %d \n", Manager::Get()->GetValueMin(v));
-				printf("\t\t ValueMax: %d \n", Manager::Get()->GetValueMax(v));
-				printf("\t\t ValueGenre: %s (%d)\n", v.GetGenreAsString().c_str(), v.GetGenre());
+// 			printf("Values announced by the nodes without polling: \n");
+// 			for( list<ValueID>::iterator it2 = nodeInfo->m_values.begin(); it2 != nodeInfo->m_values.end(); ++it2 )
+// 			{
+// 				ValueID v = *it2;
+// 				printf("\t ValueLabel: %s \n", Manager::Get()->GetValueLabel(v).c_str());
+// 				printf("\t\t ValueType: %s (%d) \n", v.GetTypeAsString().c_str(), v.GetType());
+// 				printf("\t\t ValueHelp: %s \n", Manager::Get()->GetValueHelp(v).c_str());
+// 				printf("\t\t ValueUnits: %s \n", Manager::Get()->GetValueUnits(v).c_str());
+// 				printf("\t\t ValueMin: %d \n", Manager::Get()->GetValueMin(v));
+// 				printf("\t\t ValueMax: %d \n", Manager::Get()->GetValueMax(v));
+// 				printf("\t\t ValueGenre: %s (%d)\n", v.GetGenreAsString().c_str(), v.GetGenre());
 
-				if( v.GetCommandClassId() == COMMAND_CLASS_BASIC )
-				{
-//					Manager::Get()->EnablePoll( v, 2 );		// enables polling with "intensity" of 2, though this is irrelevant with only one value polled
-					break;
-				}
-			}
-		}
-		pthread_mutex_unlock( &g_criticalSection );
+// 				if( v.GetCommandClassId() == COMMAND_CLASS_BASIC )
+// 				{
+// //					Manager::Get()->EnablePoll( v, 2 );		// enables polling with "intensity" of 2, though this is irrelevant with only one value polled
+// 					break;
+// 				}
+// 			}
+// 		}
+		//pthread_mutex_unlock( &g_criticalSection );
 
 		// If we want to access our NodeInfo list, that has been built from all the
 		// notification callbacks we received from the library, we have to do so
