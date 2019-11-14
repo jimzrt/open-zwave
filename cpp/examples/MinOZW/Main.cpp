@@ -245,6 +245,10 @@ void OnNotification
 		}
 
 		case Notification::Type_AwakeNodesQueried:
+		{
+			printf("All awake nodes queried!");
+			break;
+		}
 		case Notification::Type_AllNodesQueried:
 		case Notification::Type_AllNodesQueriedSomeDead:
 		{
