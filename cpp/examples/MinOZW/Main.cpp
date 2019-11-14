@@ -45,6 +45,9 @@
 #include "platform/Log.h"
 #include "Defs.h"
 #include <signal.h> //  our new library 
+#include <chrono>
+#include <thread>
+
 using namespace OpenZWave;
 
 
@@ -365,7 +368,9 @@ int main( int argc, char* argv[] )
 		
 			printf("now we just wait...\n");
 			printf("cancel with ctrl+c\n");
-			while(flag){}
+			while(flag){
+				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+			}
 			printf("done!");
 // 		for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
 // 		{

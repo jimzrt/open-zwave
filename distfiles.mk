@@ -103,6 +103,8 @@ DISTFILES =	.gitignore \
 	config/aeotec/zw162.xml \
 	config/aeotec/zw164.xml \
 	config/aeotec/zw175.xml \
+	config/aeotec/zw187.xml \
+	config/aeotec/zw189.xml \
 	config/aeotec/zwa001.xml \
 	config/aeotec/zwa002.xml \
 	config/aeotec/zwa003.xml \
@@ -442,6 +444,8 @@ DISTFILES =	.gitignore \
 	config/images/aeotec/zw141.png \
 	config/images/aeotec/zw162.png \
 	config/images/aeotec/zw164.png \
+	config/images/aeotec/zw187.png \
+	config/images/aeotec/zw189.png \
 	config/images/aeotec/zw195.png \
 	config/images/aeotec/zwa001.png \
 	config/images/aeotec/zwa002.png \
@@ -1549,9 +1553,9 @@ DISTFILES =	.gitignore \
 	cpp/test/Makefile \
 	cpp/test/ValueID_test.cpp \
 	cpp/test/include/gtest/gtest-death-test.h \
+	cpp/test/include/gtest/gtest-matchers.h \
 	cpp/test/include/gtest/gtest-message.h \
 	cpp/test/include/gtest/gtest-param-test.h \
-	cpp/test/include/gtest/gtest-param-test.h.pump \
 	cpp/test/include/gtest/gtest-printers.h \
 	cpp/test/include/gtest/gtest-spi.h \
 	cpp/test/include/gtest/gtest-test-part.h \
@@ -1559,26 +1563,22 @@ DISTFILES =	.gitignore \
 	cpp/test/include/gtest/gtest.h \
 	cpp/test/include/gtest/gtest_pred_impl.h \
 	cpp/test/include/gtest/gtest_prod.h \
+	cpp/test/include/gtest/internal/custom/README.md \
 	cpp/test/include/gtest/internal/custom/gtest-port.h \
 	cpp/test/include/gtest/internal/custom/gtest-printers.h \
 	cpp/test/include/gtest/internal/custom/gtest.h \
 	cpp/test/include/gtest/internal/gtest-death-test-internal.h \
 	cpp/test/include/gtest/internal/gtest-filepath.h \
 	cpp/test/include/gtest/internal/gtest-internal.h \
-	cpp/test/include/gtest/internal/gtest-linked_ptr.h \
-	cpp/test/include/gtest/internal/gtest-param-util-generated.h \
-	cpp/test/include/gtest/internal/gtest-param-util-generated.h.pump \
 	cpp/test/include/gtest/internal/gtest-param-util.h \
 	cpp/test/include/gtest/internal/gtest-port-arch.h \
 	cpp/test/include/gtest/internal/gtest-port.h \
 	cpp/test/include/gtest/internal/gtest-string.h \
-	cpp/test/include/gtest/internal/gtest-tuple.h \
-	cpp/test/include/gtest/internal/gtest-tuple.h.pump \
 	cpp/test/include/gtest/internal/gtest-type-util.h \
-	cpp/test/include/gtest/internal/gtest-type-util.h.pump \
 	cpp/test/src/gtest-death-test.cc \
 	cpp/test/src/gtest-filepath.cc \
 	cpp/test/src/gtest-internal-inl.h \
+	cpp/test/src/gtest-matchers.cc \
 	cpp/test/src/gtest-port.cc \
 	cpp/test/src/gtest-printers.cc \
 	cpp/test/src/gtest-test-part.cc \
